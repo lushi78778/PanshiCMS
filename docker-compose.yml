@@ -1,15 +1,14 @@
-# File: docker-compose.yml
 version: '3.8'
 
 services:
   panshcms:
-    build: . # 使用当前目录的Dockerfile进行构建
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: panshcms_app
     ports:
       - "8080:8080"
     volumes:
-      # 将本地的配置文件挂载到容器中，方便修改后重启即可生效
       - ./config.yaml:/app/config.yaml
-      # 创建并挂载数据卷，用于持久化存储SQLite数据库和未来上传的文件
       - ./data/sqlite:/app/data/sqlite
     restart: always

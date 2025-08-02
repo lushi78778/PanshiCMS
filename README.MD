@@ -1,6 +1,6 @@
-# PanshiCMS (磐石CMS) 官方 README
+# PanshiCMS (磐石CMS)
 
-[![Go Version](https://img.shields.io/badge/go-1.21+-blue.svg)](https://golang.org)
+[![Go Version](https://img.shields.io/badge/go-1.24+-blue.svg)](https://golang.org)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen.svg)](https://github.com/your-repo/PanshiCMS)
 [![Project Status](https://img.shields.io/badge/status-planning-orange.svg)]()
@@ -31,16 +31,16 @@
 
 ### 3. 技术选型详解
 
-| 类别       | 技术/服务                                  | 选型理由                                                                                             |
-| :--- | :--- | :--- |
-| **后端语言** | Go 1.21+                                   | 性能卓越，静态编译，部署简单，并发能力强，非常适合Web后端服务。                                         |
-| **Web框架** | Gin                                        | 轻量级，性能在Go框架中名列前茅，API友好，社区活跃。                                                   |
-| **数据库ORM**| GORM                                       | 功能强大，支持多种数据库，尤其`AutoMigrate`功能可以实现自动建表，极大简化开发和部署。                 |
-| **数据库** | SQLite (默认), MySQL (可选)                | SQLite作为默认选项，实现零配置启动，降低使用门槛。MySQL作为可选，满足高性能、高并发需求。                 |
-| **配置管理** | Viper                                      | 支持多种配置文件格式，能轻松管理程序启动所需的静态配置。                                             |
-| **搜索引擎** | Meilisearch                                | 极其轻量、快速，提供“开箱即用”的卓越搜索体验，尤其对中文分词和拼写容错支持极佳，极大提升用户体验。 |
-| **安全认证** | TOTP (pquerna/otp库)                       | 标准、可靠的双因素认证实现，提升后台安全性。                                                         |
-| **部署方案** | Docker & Docker Compose                    | 实现环境标准化、隔离化，一键启动所有服务（Go应用、Meilisearch等），极大简化部署和运维。                  |
+| 类别       | 技术/服务                   | 选型理由                                                                                             |
+| :--- |:------------------------| :--- |
+| **后端语言** | Go 1.24+                | 性能卓越，静态编译，部署简单，并发能力强，非常适合Web后端服务。                                         |
+| **Web框架** | Gin                     | 轻量级，性能在Go框架中名列前茅，API友好，社区活跃。                                                   |
+| **数据库ORM**| GORM                    | 功能强大，支持多种数据库，尤其`AutoMigrate`功能可以实现自动建表，极大简化开发和部署。                 |
+| **数据库** | SQLite (默认), MySQL (可选) | SQLite作为默认选项，实现零配置启动，降低使用门槛。MySQL作为可选，满足高性能、高并发需求。                 |
+| **配置管理** | Viper                   | 支持多种配置文件格式，能轻松管理程序启动所需的静态配置。                                             |
+| **搜索引擎** | Meilisearch             | 极其轻量、快速，提供“开箱即用”的卓越搜索体验，尤其对中文分词和拼写容错支持极佳，极大提升用户体验。 |
+| **安全认证** | TOTP (pquerna/otp库)     | 标准、可靠的双因素认证实现，提升后台安全性。                                                         |
+| **部署方案** | Docker & Docker Compose | 实现环境标准化、隔离化，一键启动所有服务（Go应用、Meilisearch等），极大简化部署和运维。                  |
 
 ### 4. 宏观架构设计
 

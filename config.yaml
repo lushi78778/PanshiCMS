@@ -1,0 +1,7 @@
+# File: config.yaml
+server:
+  port: ":8080"
+
+database:
+  type: "sqlite"
+  dsn: "data/sqlite/panshcms.db" # SQLite数据库文件路径

@@ -181,31 +181,31 @@ func (article *NewsArticle) AfterDelete(tx *gorm.DB) (err error) {
 
 ##### **模块 `M-PROJ-SETUP`: 项目初始化与环境配置**
 * **特性 `F-PROJ-01`: 基础环境搭建**
-    - [x] `T-PROJ-01`: 初始化Go Module (`go mod init github.com/your-repo/PanshiCMS`)。
-    - [x] `T-PROJ-02`: 引入Gin, GORM, Viper等核心依赖。
-    - [x] `T-PROJ-03`: 规划并创建项目目录结构 (`/internal`, `/cmd`, `/web`等)。
-    - [x] `T-PROJ-04`: 编写基础的Dockerfile，用于构建应用镜像。
-    - [x] `T-PROJ-05`: 编写v1版的`docker-compose.yml`，仅包含Go应用和数据库。
-    - [x] `T-PROJ-06`: 配置Viper，实现从`config.yaml`加载配置。
+    - ✅ `T-PROJ-01`: 初始化Go Module (`go mod init github.com/your-repo/PanshiCMS`)。
+    - ✅ `T-PROJ-02`: 引入Gin, GORM, Viper等核心依赖。
+    - ✅ `T-PROJ-03`: 规划并创建项目目录结构 (`/internal`, `/cmd`, `/web`等)。
+    - ✅ `T-PROJ-04`: 编写基础的Dockerfile，用于构建应用镜像。
+    - ✅ `T-PROJ-05`: 编写v1版的`docker-compose.yml`，仅包含Go应用和数据库。
+    - ✅ `T-PROJ-06`: 配置Viper，实现从`config.yaml`加载配置。
 
 ##### **模块 `M-BE-CORE`: 后端核心架构**
 * **特性 `F-BE-DB-01`: 数据库与模型**
-    - [x] `T-DB-01`: 设计并编写所有核心内容（产品、新闻、案例、网站设置等）的GORM模型Struct。
-    - [x] `T-DB-02`: 在模型中加入基础SEO字段（Slug, MetaTitle, MetaDescription, MetaKeywords）。
-    - [x] `T-DB-03`: 实现数据库连接逻辑，通过配置支持SQLite和MySQL的切换。
-    - [x] `T-DB-04`: 实现GORM的`AutoMigrate`功能，在程序启动时自动建表。
+    - ✅ `T-DB-01`: 设计并编写所有核心内容（产品、新闻、案例、网站设置等）的GORM模型Struct。
+    - ✅ `T-DB-02`: 在模型中加入基础SEO字段（Slug, MetaTitle, MetaDescription, MetaKeywords）。
+    - ✅ `T-DB-03`: 实现数据库连接逻辑，通过配置支持SQLite和MySQL的切换。
+    - ✅ `T-DB-04`: 实现GORM的`AutoMigrate`功能，在程序启动时自动建表。
 * **特性 `F-BE-API-01`: 内容核心CRUD API**
-    - [x] `T-API-01`: 设计并实现`/api/v1/news`的RESTful接口 (GET列表, GET单条, POST, PUT, DELETE)。
-    - [x] `T-API-02`: 为上述API编写对应的Handler函数，处理业务逻辑。
-    - [x] `T-API-03`: 对其他核心模型（产品、案例等）重复以上API和Handler的开发。
+    - ✅ `T-API-01`: 设计并实现`/api/v1/news`的RESTful接口 (GET列表, GET单条, POST, PUT, DELETE)。
+    - ✅ `T-API-02`: 为上述API编写对应的Handler函数，处理业务逻辑。
+    - ✅ `T-API-03`: 对其他核心模型（产品、案例等）重复以上API和Handler的开发。
 
 ##### **模块 `M-ADMIN-PANEL`: 后台管理系统**
 * **特性 `F-ADMIN-AUTH-01`: 管理员认证 (v1 - 基础版)**
-    - [x] `T-AUTH-01`: 设计管理员用户`AdminUser`模型（含密码哈希与加盐字段）。
-    - [x] `T-AUTH-02`: 实现密码的哈希与验证逻辑。
-    - [x] `T-AUTH-03`: 编写登录接口`/admin/login`和JWT/Session生成逻辑。
-    - [x] `T-AUTH-04`: 编写一个认证中间件，用于保护所有后台API。
-    - [x] `T-AUTH-05`: 开发`/do?action=init`初始化流程，用于创建第一个管理员。
+    - ✅ `T-AUTH-01`: 设计管理员用户`AdminUser`模型（含密码哈希与加盐字段）。
+    - ✅ `T-AUTH-02`: 实现密码的哈希与验证逻辑。
+    - ✅ `T-AUTH-03`: 编写登录接口`/admin/login`和JWT/Session生成逻辑。
+    - ✅ `T-AUTH-04`: 编写一个认证中间件，用于保护所有后台API。
+    - ✅ `T-AUTH-05`: 开发`/do?action=init`初始化流程，用于创建第一个管理员。
 * **特性 `F-ADMIN-UI-01`: 内容管理界面**
     - [ ] `T-UI-01`: 搭建后台基础布局（侧边栏导航、顶部栏、主内容区）。
     - [ ] `T-UI-02`: 开发新闻模块的列表页面（含分页、搜索）。

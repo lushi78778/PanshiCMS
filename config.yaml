@@ -4,4 +4,7 @@ server:
 
 database:
   type: "sqlite"
-  dsn: "data/sqlite/panshcms.db" # SQLite数据库文件路径
+  dsn: "data/sqlite/panshcms.db"
+
+jwt:
+  secret: "a_very_secret_key_change_me_in_production" # 生产环境中务必修改为一个更复杂的密钥

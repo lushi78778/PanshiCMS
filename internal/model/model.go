@@ -70,3 +70,11 @@ type CaseStudy struct {
 	// SEO 字段
 	Slug string `gorm:"unique;not null" json:"slug"`
 }
+
+// AdminUser 代表后台管理员用户
+type AdminUser struct {
+	gorm.Model
+	Username     string `gorm:"unique;not null"`
+	PasswordHash string `gorm:"not null"`
+	// 可选：未来可增加角色、权限等字段
+}

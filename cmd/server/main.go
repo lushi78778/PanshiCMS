@@ -2,33 +2,26 @@
 package main
 
 import (
-	"PanshiCMS/internal/config"   // 引入config包
-	"PanshiCMS/internal/database" // 引入database包
+	"PanshiCMS/internal/config"
+	"PanshiCMS/internal/database"
+	"PanshiCMS/internal/router" // 引入router包
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 )
 
 func main() {
-	// 1. 初始化配置
 	config.InitConfig()
-
-	// 2. 初始化数据库
 	database.InitDB()
 
-	// 3. 创建 Gin 引擎
 	r := gin.Default()
 
-	// 4. 创建路由处理器
-	r.GET("/", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "Welcome to PanshiCMS! Database connected.",
-		})
-	})
+	// 设置路由
+	router.SetupRouter(r) // 调用我们的路由设置函数
 
-	// 5. 启动 HTTP 服务
+	// 启动 HTTP 服务
 	port := viper.GetString("server.port")
 	if port == "" {
-		port = ":8080" // 默认端口
+		port = ":8080"
 	}
 	r.Run(port)
 }

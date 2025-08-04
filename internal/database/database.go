@@ -79,7 +79,8 @@ func runMigrations() {
 		&model.SiteSettings{},
 		&model.Service{},
 		&model.CaseStudy{},
-		// ... 在这里加入所有您定义的模型 ...
+		&model.AdminUser{},
+		// ... 在这里加入所有定义的模型 ...
 	)
 	if err != nil {
 		log.Fatalf("数据库自动迁移失败: %v", err)

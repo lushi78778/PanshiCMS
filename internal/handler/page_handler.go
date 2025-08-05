@@ -21,3 +21,8 @@ func ShowAdminNewsList(c *gin.Context) {
 	// 将之前的重定向，修改为渲染我们新的模板文件
 	c.HTML(http.StatusOK, "admin/news_list.html", nil)
 }
+
+// ShowAdminNewsEditPage 渲染新闻的新建/编辑页面
+func ShowAdminNewsEditPage(c *gin.Context) {
+	c.HTML(http.StatusOK, "admin/news_edit.html", nil)
+}

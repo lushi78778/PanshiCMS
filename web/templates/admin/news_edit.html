@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>PanshiCMS - 编辑文章</title>
+    <style>
+        body { font-family: sans-serif; margin: 0; background-color: #f8f9fa; }
+        .container { display: flex; min-height: 100vh; }
+        .sidebar { width: 220px; background-color: #343a40; color: white; padding-top: 20px; flex-shrink: 0; }
+        .sidebar h2 { text-align: center; margin-bottom: 30px; }
+        .sidebar ul { list-style-type: none; padding: 0; margin: 0; }
+        .sidebar ul li a { display: block; color: #adb5bd; padding: 15px 20px; text-decoration: none; }
+        .sidebar ul li a:hover, .sidebar ul li a.active { background-color: #495057; color: white; }
+        .main-content { flex-grow: 1; }
+        .header { background-color: white; padding: 15px 30px; border-bottom: 1px solid #dee2e6; display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { margin: 0; font-size: 24px; }
+        .content { padding: 30px; }
+        .btn { background-color: #007bff; color: white; border: none; padding: 10px 18px; border-radius: 5px; cursor: pointer; text-decoration: none; font-size: 14px; }
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 5px; }
+        .form-group input, .form-group textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .form-group textarea { min-height: 200px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="sidebar">
+        <h2>PanshiCMS</h2>
+        <ul>
+            <li><a href="/admin/dashboard">仪表盘</a></li>
+            <li><a href="/admin/news" class="active">新闻管理</a></li>
+            <li><a href="/admin/services">服务管理</a></li>
+            <li><a href="/admin/cases">案例管理</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <div class="header">
+            <h1 id="page-title">新建文章</h1>
+            <a href="/admin/news" class="btn">返回列表</a>
+        </div>
+        <div class="content">
+            <form id="editForm">
+                <input type="hidden" id="newsId">
+
+                <div class="form-group">
+                    <label for="title">标题</label>
+                    <input type="text" id="title" required>
+                </div>
+                <div class="form-group">
+                    <label for="summary">摘要</label>
+                    <textarea id="summary"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="content">正文</label>
+                    <textarea id="content"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="slug">URL别名 (Slug)</label>
+                    <input type="text" id="slug" required>
+                </div>
+                <div class="form-group">
+                    <label for="publishDate">发布日期</label>
+                    <input type="datetime-local" id="publishDate" required>
+                </div>
+
+                <hr>
+                <h3>SEO 设置</h3>
+                <div class="form-group">
+                    <label for="metaTitle">SEO 标题</label>
+                    <input type="text" id="metaTitle">
+                </div>
+                <div class="form-group">
+                    <label for="metaDescription">SEO 描述</label>
+                    <textarea id="metaDescription"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="metaKeywords">SEO 关键词</label>
+                    <input type="text" id="metaKeywords">
+                </div>
+
+                <button type="submit" class="btn">保存</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    const token = localStorage.getItem('jwt_token');
+    if (!token) {
+        window.location.href = '/admin/login';
+    }
+
+    const form = document.getElementById('editForm');
+    const pageTitle = document.getElementById('page-title');
+    const newsIdInput = document.getElementById('newsId');
+
+    // --- 核心逻辑：判断是新建还是编辑 ---
+    let isEditMode = false;
+    const pathParts = window.location.pathname.split('/');
+    if (pathParts.includes('edit') && pathParts.length > pathParts.indexOf('edit') + 1) {
+        const id = pathParts[pathParts.indexOf('edit') + 1];
+        if (!isNaN(id)) {
+            isEditMode = true;
+            newsIdInput.value = id;
+            pageTitle.textContent = `编辑文章 (ID: ${id})`;
+            loadNewsData(id);
+        }
+    }
+
+    // 如果是编辑模式，加载现有数据
+    async function loadNewsData(id) {
+        try {
+            const response = await fetch(`/api/v1/news/${id}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!response.ok) throw new Error('获取文章数据失败');
+            const result = await response.json();
+            populateForm(result.data);
+        } catch (error) {
+            alert(error.message);
+            window.location.href = '/admin/news';
+        }
+    }
+
+    // 将API数据填充到表单中
+    function populateForm(news) {
+        document.getElementById('title').value = news.title;
+        document.getElementById('summary').value = news.summary;
+        document.getElementById('content').value = news.content;
+        document.getElementById('slug').value = news.slug;
+        // 格式化日期以匹配<input type="datetime-local">的格式
+        const date = new Date(news.publishDate);
+        date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+        document.getElementById('publishDate').value = date.toISOString().slice(0, 16);
+
+        document.getElementById('metaTitle').value = news.metaTitle;
+        document.getElementById('metaDescription').value = news.metaDescription;
+        document.getElementById('metaKeywords').value = news.metaKeywords;
+    }
+
+    // 表单提交逻辑
+    form.addEventListener('submit', async function(event) {
+        event.preventDefault();
+
+        // 从表单收集数据
+        const newsData = {
+            title: document.getElementById('title').value,
+            summary: document.getElementById('summary').value,
+            content: document.getElementById('content').value,
+            slug: document.getElementById('slug').value,
+            publishDate: new Date(document.getElementById('publishDate').value).toISOString(),
+            metaTitle: document.getElementById('metaTitle').value,
+            metaDescription: document.getElementById('metaDescription').value,
+            metaKeywords: document.getElementById('metaKeywords').value,
+        };
+
+        let url = '/api/v1/news';
+        let method = 'POST';
+
+        if (isEditMode) {
+            url = `/api/v1/news/${newsIdInput.value}`;
+            method = 'PUT';
+        }
+
+        try {
+            const response = await fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(newsData)
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                alert('保存成功！');
+                window.location.href = '/admin/news';
+            } else {
+                alert(`保存失败: ${result.error}`);
+            }
+        } catch (error) {
+            alert('网络错误');
+        }
+    });
+</script>
+</body>
+</html>

@@ -23,6 +23,8 @@ func SetupRouter(r *gin.Engine) {
 		adminPageRoutes.GET("/login", handler.ShowLoginPage)
 		adminPageRoutes.GET("/dashboard", handler.ShowAdminDashboard)
 		adminPageRoutes.GET("/news", handler.ShowAdminNewsList)
+		adminPageRoutes.GET("/news/new", handler.ShowAdminNewsEditPage)      // <-- 新增：新建文章页面
+		adminPageRoutes.GET("/news/edit/:id", handler.ShowAdminNewsEditPage) // <-- 新增：编辑文章页面
 	}
 
 	// --- 后台API路由 (供前端JS调用) ---

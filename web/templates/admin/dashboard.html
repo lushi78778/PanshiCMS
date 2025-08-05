@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>PanshiCMS - 后台管理</title>
+  <style>
+    body { font-family: sans-serif; margin: 0; background-color: #f8f9fa; }
+    .container { display: flex; min-height: 100vh; }
+    .sidebar { width: 220px; background-color: #343a40; color: white; padding-top: 20px; flex-shrink: 0; }
+    .sidebar h2 { text-align: center; margin-bottom: 30px; }
+    .sidebar ul { list-style-type: none; padding: 0; margin: 0; }
+    .sidebar ul li a { display: block; color: #adb5bd; padding: 15px 20px; text-decoration: none; }
+    .sidebar ul li a:hover, .sidebar ul li a.active { background-color: #495057; color: white; }
+    .main-content { flex-grow: 1; }
+    .header { background-color: white; padding: 15px 30px; border-bottom: 1px solid #dee2e6; display: flex; justify-content: space-between; align-items: center; }
+    .header h1 { margin: 0; font-size: 24px; }
+    .content { padding: 30px; }
+    #logoutButton { background-color: #dc3545; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="sidebar">
+    <h2>PanshiCMS</h2>
+    <ul>
+      <li><a href="/admin/dashboard" class="active">仪表盘</a></li>
+      <li><a href="/admin/news">新闻管理</a></li>
+      <li><a href="/admin/services">服务管理</a></li>
+      <li><a href="/admin/cases">案例管理</a></li>
+    </ul>
+  </div>
+  <div class="main-content">
+    <div class="header">
+      <h1>欢迎, Admin!</h1>
+      <button id="logoutButton">退出登录</button>
+    </div>
+    <div class="content">
+      <h2>仪表盘</h2>
+      <p>这里是后台主内容区域。您可以在这里看到网站的统计数据或快捷操作。</p>
+    </div>
+  </div>
+</div>
+
+<script>
+  // 前端认证检查：在加载页面时，检查localStorage中是否存在token
+  const token = localStorage.getItem('jwt_token');
+  if (!token) {
+    // 如果没有token，说明未登录，直接强制跳转回登录页
+    window.location.href = '/admin/login';
+  }
+
+  // 退出登录按钮逻辑
+  document.getElementById('logoutButton').addEventListener('click', function() {
+    localStorage.removeItem('jwt_token');
+    window.location.href = '/admin/login';
+  });
+</script>
+</body>
+</html>

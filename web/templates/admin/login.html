@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>PanshiCMS - 管理员登录</title>
+    <style>
+        body { font-family: sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .login-container { padding: 40px; background-color: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 300px; }
+        h1 { text-align: center; color: #333; }
+        label { color: #555; }
+        input[type=text], input[type=password] { width: 100%; padding: 10px; margin: 8px 0 20px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        input[type=submit] { width: 100%; background-color: #007bff; color: white; padding: 14px 20px; margin: 8px 0; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        input[type=submit]:hover { background-color: #0056b3; }
+        #error-message { color: red; margin-top: 10px; text-align: center; }
+    </style>
+</head>
+<body>
+<div class="login-container">
+    <h1>管理员登录</h1>
+    <form id="loginForm">
+        <label for="username">用户名:</label>
+        <input type="text" id="username" name="username" required>
+        <label for="password">密码:</label>
+        <input type="password" id="password" name="password" required>
+        <input type="submit" value="登录">
+    </form>
+    <div id="error-message"></div>
+</div>
+
+<script>
+    document.getElementById('loginForm').addEventListener('submit', async function (event) {
+        event.preventDefault();
+
+        const username = document.getElementById('username').value;
+        const password = document.getElementById('password').value;
+        const errorMessageDiv = document.getElementById('error-message');
+        errorMessageDiv.textContent = ''; // 清空旧错误
+
+        try {
+            const response = await fetch('/admin/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // 登录成功, 将token存入浏览器的localStorage
+                localStorage.setItem('jwt_token', data.token);
+                // 跳转到后台主页
+                window.location.href = '/admin/dashboard';
+            } else {
+                errorMessageDiv.textContent = data.error || '登录失败';
+            }
+        } catch (error) {
+            errorMessageDiv.textContent = '发生网络错误，请稍后重试。';
+        }
+    });
+</script>
+</body>
+</html>

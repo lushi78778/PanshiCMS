@@ -16,10 +16,8 @@ func ShowAdminDashboard(c *gin.Context) {
 	c.HTML(http.StatusOK, "admin/dashboard.html", nil)
 }
 
-// ShowAdminNewsList 渲染后台新闻列表页面 (为下一步做准备)
+// ShowAdminNewsList 渲染后台新闻列表页面
 func ShowAdminNewsList(c *gin.Context) {
-	// 暂时先重定向到dashboard，之后会实现具体页面
-	c.Redirect(http.StatusFound, "/admin/dashboard")
+	// 将之前的重定向，修改为渲染我们新的模板文件
+	c.HTML(http.StatusOK, "admin/news_list.html", nil)
 }
-
-// ... 未来会添加更多页面渲染函数 ...

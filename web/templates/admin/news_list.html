@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>PanshiCMS - 新闻管理</title>
+  <style>
+    body { font-family: sans-serif; margin: 0; background-color: #f8f9fa; }
+    .container { display: flex; min-height: 100vh; }
+    .sidebar { width: 220px; background-color: #343a40; color: white; padding-top: 20px; flex-shrink: 0; }
+    .sidebar h2 { text-align: center; margin-bottom: 30px; }
+    .sidebar ul { list-style-type: none; padding: 0; margin: 0; }
+    .sidebar ul li a { display: block; color: #adb5bd; padding: 15px 20px; text-decoration: none; }
+    .sidebar ul li a:hover, .sidebar ul li a.active { background-color: #495057; color: white; }
+    .main-content { flex-grow: 1; }
+    .header { background-color: white; padding: 15px 30px; border-bottom: 1px solid #dee2e6; display: flex; justify-content: space-between; align-items: center; }
+    .header h1 { margin: 0; font-size: 24px; }
+    .content { padding: 30px; }
+    .btn { background-color: #007bff; color: white; border: none; padding: 10px 18px; border-radius: 5px; cursor: pointer; text-decoration: none; font-size: 14px; }
+    table { width: 100%; border-collapse: collapse; margin-top: 20px; background-color: white; }
+    th, td { border: 1px solid #dee2e6; padding: 12px; text-align: left; }
+    th { background-color: #f8f9fa; }
+    .pagination { margin-top: 20px; }
+    .pagination button { padding: 8px 12px; margin-right: 5px; cursor: pointer; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="sidebar">
+    <h2>PanshiCMS</h2>
+    <ul>
+      <li><a href="/admin/dashboard">仪表盘</a></li>
+      <li><a href="/admin/news" class="active">新闻管理</a></li>
+      <li><a href="/admin/services">服务管理</a></li>
+      <li><a href="/admin/cases">案例管理</a></li>
+    </ul>
+  </div>
+  <div class="main-content">
+    <div class="header">
+      <h1>新闻管理</h1>
+      <a href="/admin/news/new" class="btn">新增文章</a>
+    </div>
+    <div class="content">
+      <table>
+        <thead>
+        <tr>
+          <th>ID</th>
+          <th>标题</th>
+          <th>发布日期</th>
+          <th>操作</th>
+        </tr>
+        </thead>
+        <tbody id="news-table-body">
+        </tbody>
+      </table>
+      <div id="pagination-controls" class="pagination">
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  const token = localStorage.getItem('jwt_token');
+  if (!token) {
+    window.location.href = '/admin/login';
+  }
+
+  const newsTableBody = document.getElementById('news-table-body');
+  const paginationControls = document.getElementById('pagination-controls');
+
+  async function fetchNews(page = 1) {
+    try {
+      const response = await fetch(`/api/v1/news?page=${page}`, {
+        method: 'GET',
+        headers: {
+          // 这是关键：在请求头中附带上我们的JWT令牌
+          'Authorization': `Bearer ${token}`
+        }
+      });
+
+      if (response.status === 401) {
+        // 如果令牌失效或无效，跳转回登录页
+        window.location.href = '/admin/login';
+        return;
+      }
+
+      const result = await response.json();
+      if (response.ok) {
+        renderTable(result.data.list);
+        renderPagination(result.data.total, result.data.page, result.data.pageSize);
+      } else {
+        alert(result.error || '获取数据失败');
+      }
+    } catch (error) {
+      console.error('Error fetching news:', error);
+      alert('网络错误');
+    }
+  }
+
+  function renderTable(newsList) {
+    newsTableBody.innerHTML = ''; // 清空旧数据
+    if (!newsList || newsList.length === 0) {
+      newsTableBody.innerHTML = '<tr><td colspan="4" style="text-align: center;">暂无数据</td></tr>';
+      return;
+    }
+    newsList.forEach(news => {
+      const row = document.createElement('tr');
+      // 确保这里使用的都是小驼峰命名
+      row.innerHTML = `
+                <td>${news.ID}</td>
+                <td>${news.title}</td>
+                <td>${new Date(news.publishDate).toLocaleDateString()}</td>
+                <td>
+                    <a href="/admin/news/edit/${news.ID}">编辑</a>
+                    <a href="#" onclick="deleteNews(${news.ID})">删除</a>
+                </td>
+            `;
+      newsTableBody.appendChild(row);
+    });
+  }
+
+  function renderPagination(total, currentPage, pageSize) {
+    paginationControls.innerHTML = '';
+    const totalPages = Math.ceil(total / pageSize);
+
+    for (let i = 1; i <= totalPages; i++) {
+      const button = document.createElement('button');
+      button.textContent = i;
+      if (i === currentPage) {
+        button.disabled = true;
+      }
+      button.onclick = () => fetchNews(i);
+      paginationControls.appendChild(button);
+    }
+  }
+
+  // 页面加载时，自动获取第一页数据
+  document.addEventListener('DOMContentLoaded', () => {
+    fetchNews(1);
+  });
+
+  // 删除功能 (简化版)
+  async function deleteNews(id) {
+    if (!confirm(`确定要删除ID为 ${id} 的文章吗？`)) {
+      return;
+    }
+    try {
+      const response = await fetch(`/api/v1/news/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const result = await response.json();
+      if (response.ok) {
+        alert('删除成功');
+        fetchNews(1); // 刷新列表
+      } else {
+        alert(result.error || '删除失败');
+      }
+    } catch (error) {
+      alert('网络错误');
+    }
+  }
+</script>
+</body>
+</html>

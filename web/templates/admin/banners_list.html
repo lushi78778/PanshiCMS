@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>PanshiCMS - 轮播图管理</title>
+  <link rel="stylesheet" href="https://cdn.staticfile.org/layui/2.8.0/css/layui.css" />
+  <style>
+    body { font-family: sans-serif; margin: 0; background-color: #f8f9fa; }
+    .container { display: flex; min-height: 100vh; }
+    .sidebar { width: 220px; background-color: #343a40; color: white; padding-top: 20px; flex-shrink: 0; }
+    .sidebar h2 { text-align: center; margin-bottom: 30px; }
+    .sidebar ul { list-style: none; padding: 0; margin: 0; }
+    .sidebar ul li a { display: block; color: #adb5bd; padding: 15px 20px; text-decoration: none; }
+    .sidebar ul li a:hover, .sidebar ul li a.active { background-color: #495057; color: white; }
+    .main-content { flex-grow: 1; }
+    .header { background-color: white; padding: 15px 30px; border-bottom: 1px solid #dee2e6; display: flex; justify-content: space-between; align-items: center; }
+    .header h1 { margin: 0; font-size: 24px; }
+    .content { padding: 30px; }
+    .pagination { margin-top: 20px; }
+    .pagination button { padding: 8px 12px; margin-right: 5px; cursor: pointer; }
+    .thumbnail { max-width: 80px; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="sidebar">
+    <h2>PanshiCMS</h2>
+    <ul>
+      <li><a href="/admin/dashboard">仪表盘</a></li>
+      <li><a href="/admin/news">新闻管理</a></li>
+      <li><a href="/admin/services">服务管理</a></li>
+      <li><a href="/admin/cases">案例管理</a></li>
+      <li><a href="/admin/banners" class="active">轮播图管理</a></li>
+      <li><a href="/admin/settings">站点设置</a></li>
+    </ul>
+  </div>
+  <div class="main-content">
+    <div class="header">
+      <h1>轮播图管理</h1>
+      <a href="/admin/banners/new" class="layui-btn">新增轮播图</a>
+    </div>
+    <div class="content">
+      <table class="layui-table">
+        <thead>
+        <tr>
+          <th>ID</th>
+          <th>图片</th>
+          <th>链接</th>
+          <th>排序</th>
+          <th>发布</th>
+          <th>操作</th>
+        </tr>
+        </thead>
+        <tbody id="banners-table-body"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+  const token = localStorage.getItem('jwt_token');
+  if (!token) {
+    window.location.href = '/admin/login';
+  }
+  const tableBody = document.getElementById('banners-table-body');
+
+  async function fetchBanners() {
+    try {
+      const resp = await fetch('/api/v1/banners', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const result = await resp.json();
+      if (resp.ok) {
+        renderTable(result.data);
+      } else {
+        alert(result.error || '获取数据失败');
+      }
+    } catch (err) {
+      alert('网络错误');
+    }
+  }
+
+  function renderTable(list) {
+    tableBody.innerHTML = '';
+    if (!list || list.length === 0) {
+      tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center;">暂无数据</td></tr>';
+      return;
+    }
+    list.forEach(banner => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${banner.ID}</td>
+        <td><img src="${banner.imageUrl}" class="thumbnail"></td>
+        <td>${banner.link || ''}</td>
+        <td>${banner.sortOrder}</td>
+        <td>${banner.isPublished ? '是' : '否'}</td>
+        <td>
+          <a href="/admin/banners/edit/${banner.ID}">编辑</a>
+          <a href="#" onclick="deleteBanner(${banner.ID})">删除</a>
+        </td>
+      `;
+      tableBody.appendChild(tr);
+    });
+  }
+
+  async function deleteBanner(id) {
+    if (!confirm(`确定要删除ID为 ${id} 的轮播图吗？`)) return;
+    try {
+      const resp = await fetch(`/api/v1/banners/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      const result = await resp.json();
+      if (resp.ok) {
+        alert('删除成功');
+        fetchBanners();
+      } else {
+        alert(result.error || '删除失败');
+      }
+    } catch (err) {
+      alert('网络错误');
+    }
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    fetchBanners();
+  });
+</script>
+<script src="https://cdn.staticfile.org/layui/2.8.0/layui.js"></script>
+</body>
+</html>

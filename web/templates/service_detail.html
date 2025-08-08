@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ if .service.MetaTitle }}{{ .service.MetaTitle }}{{ else }}{{ .service.Title }}{{ end }} - {{ .settings.CompanyName }}</title>
+  <!-- 动态 SEO 设置 -->
+  {{ if .service.MetaDescription }}<meta name="description" content="{{ .service.MetaDescription }}">{{ else if .settings.DefaultMetaDescription }}<meta name="description" content="{{ .settings.DefaultMetaDescription }}">{{ end }}
+  {{ if .service.MetaKeywords }}<meta name="keywords" content="{{ .service.MetaKeywords }}">{{ end }}
+  <link rel="stylesheet" href="https://cdn.staticfile.org/layui/2.8.0/css/layui.css" />
+  <style>
+    body { margin: 0; font-family: sans-serif; background-color: #f8f9fa; }
+    :root {
+      --primary-color: #0a4b8e;
+      --accent-color: #006dba;
+      --footer-bg: #00264d;
+    }
+    header { background-color: var(--primary-color); color: #fff; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+    nav a { margin-right: 15px; color: #ffffff; text-decoration: none; }
+    nav a:last-child { margin-right: 0; }
+    nav a:hover { text-decoration: underline; }
+    .content { padding: 40px 30px; background-color: white; max-width: 800px; margin: 30px auto; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .content h1 { margin-top: 0; color: var(--primary-color); }
+    .content .meta { color: #888; margin-bottom: 20px; }
+    .content .body { line-height: 1.7; color: #333; }
+    .footer { background-color: var(--footer-bg); color: #fff; padding: 20px 30px; text-align: center; }
+    .footer a { color: #adb5bd; margin: 0 8px; text-decoration: none; }
+  </style>
+</head>
+<body>
+<header>
+  <div class="logo">{{ .settings.CompanyName }}</div>
+  <nav>
+    <a href="/">首页</a>
+    <a href="/about">关于我们</a>
+    <a href="/services" style="font-weight:bold;">产品服务</a>
+    <a href="/cases">成功案例</a>
+    <a href="/news">新闻中心</a>
+    <a href="/contact">联系我们</a>
+  </nav>
+</header>
+<div class="content">
+  <h1>{{ .service.Title }}</h1>
+  <div class="meta"></div>
+  <div class="body">
+    {{ .service.Content | safe }}
+  </div>
+</div>
+<footer class="footer">
+  <p>© {{ .settings.CompanyName }}</p>
+  <p>ICP备案号：{{ .settings.ICPNumber }} | 公安备案号：{{ .settings.GonganBeian }}</p>
+  <p><a href="/privacy" style="color:#adb5bd;">隐私政策</a> | <a href="/legal" style="color:#adb5bd;">法律声明</a></p>
+</footer>
+</body>
+</html>

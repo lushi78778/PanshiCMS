@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>关于我们 - {{ .settings.CompanyName }}</title>
+  <!-- 引入 Layui 样式 -->
+  <link rel="stylesheet" href="https://cdn.staticfile.org/layui/2.8.0/css/layui.css" />
+  <!-- SEO 默认设置 -->
+  {{ if .settings.DefaultMetaDescription }}<meta name="description" content="{{ .settings.DefaultMetaDescription }}">{{ end }}
+  {{ if .settings.DefaultMetaTitle }}<meta name="title" content="{{ .settings.DefaultMetaTitle }}">{{ end }}
+  <style>
+    body { margin: 0; font-family: sans-serif; background-color: #f8f9fa; }
+    :root {
+      --primary-color: #0a4b8e;
+      --accent-color: #006dba;
+      --footer-bg: #00264d;
+    }
+    header { background-color: var(--primary-color); color: #fff; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+    nav a { margin-right: 15px; color: #ffffff; text-decoration: none; }
+    nav a:last-child { margin-right: 0; }
+    nav a:hover { text-decoration: underline; }
+    .section { padding: 40px 30px; background-color: white; max-width: 800px; margin: 30px auto; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .section h1 { color: var(--primary-color); }
+    .footer { background-color: var(--footer-bg); color: #fff; padding: 20px 30px; text-align: center; }
+    .footer a { color: #adb5bd; margin: 0 8px; text-decoration: none; }
+  </style>
+</head>
+<body>
+<header>
+  <div class="logo">{{ .settings.CompanyName }}</div>
+  <nav>
+    <a href="/">首页</a>
+    <a href="/about" style="font-weight:bold;">关于我们</a>
+    <a href="/services">产品服务</a>
+    <a href="/cases">成功案例</a>
+    <a href="/news">新闻中心</a>
+    <a href="/contact">联系我们</a>
+  </nav>
+</header>
+
+<div class="section">
+  <h1>关于{{ .settings.CompanyName }}</h1>
+  <p>欢迎来到{{ .settings.CompanyName }}。我们是一家致力于为客户提供高质量产品与服务的公司，业务范围涵盖网站建设、软件开发、数字化运营等。凭借多年的行业经验和专业团队，我们帮助众多客户实现数字化转型与业务增长。</p>
+  <p>我们的使命是为企业构建稳定、强大的内容管理和数字营销平台，助力客户在竞争激烈的市场中脱颖而出。</p>
+  <h2>联系方式</h2>
+  <p>电话：{{ .settings.ContactPhone }}</p>
+  <p>邮箱：{{ .settings.ContactEmail }}</p>
+  <p>地址：{{ .settings.Address }}</p>
+</div>
+
+<footer class="footer">
+  <p>© {{ .settings.CompanyName }}</p>
+  <p>ICP备案号：{{ .settings.ICPNumber }} | 公安备案号：{{ .settings.GonganBeian }}</p>
+  <p><a href="/privacy" style="color:#adb5bd;">隐私政策</a> | <a href="/legal" style="color:#adb5bd;">法律声明</a></p>
+</footer>
+</body>
+</html>

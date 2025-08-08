@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>PanshiCMS - 编辑轮播图</title>
+    <link rel="stylesheet" href="https://cdn.staticfile.org/layui/2.8.0/css/layui.css" />
+    <style>
+        body { font-family: sans-serif; margin: 0; background-color: #f8f9fa; }
+        .container { display: flex; min-height: 100vh; }
+        .sidebar { width: 220px; background-color: #343a40; color: white; padding-top: 20px; flex-shrink: 0; }
+        .sidebar h2 { text-align: center; margin-bottom: 30px; font-size: 20px; }
+        .sidebar ul { list-style: none; padding: 0; margin: 0; }
+        .sidebar ul li a { display: block; color: #adb5bd; padding: 15px 20px; text-decoration: none; }
+        .sidebar ul li a:hover,
+        .sidebar ul li a.active { background-color: #495057; color: white; }
+        .main-content { flex-grow: 1; }
+        .header { background-color: white; padding: 15px 30px; border-bottom: 1px solid #dee2e6; display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { margin: 0; font-size: 24px; }
+        .content { padding: 30px; }
+        #imagePreview { max-width:200px; display:none; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="sidebar">
+        <h2>PanshiCMS</h2>
+        <ul>
+            <li><a href="/admin/dashboard">仪表盘</a></li>
+            <li><a href="/admin/news">新闻管理</a></li>
+            <li><a href="/admin/services">服务管理</a></li>
+            <li><a href="/admin/cases">案例管理</a></li>
+            <li><a href="/admin/banners" class="active">轮播图管理</a></li>
+            <li><a href="/admin/settings">站点设置</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <div class="header">
+            <h1 id="page-title">新建轮播图</h1>
+            <a href="/admin/banners" class="layui-btn layui-btn-primary">返回列表</a>
+        </div>
+        <div class="content">
+            <form id="editForm" class="layui-form">
+                <input type="hidden" id="bannerId" name="bannerId">
+                <div class="layui-form-item">
+                    <label class="layui-form-label">图片</label>
+                    <div class="layui-input-block">
+                        <input type="file" id="imageFile" accept="image/*" class="layui-input">
+                        <input type="hidden" id="imageUrl" name="imageUrl">
+                        <div style="margin-top:10px;">
+                            <img id="imagePreview" src="" alt="图片预览">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label" for="link">链接</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="link" name="link" class="layui-input" placeholder="点击轮播图跳转的链接，可留空">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label" for="sortOrder">排序</label>
+                    <div class="layui-input-block">
+                        <input type="number" id="sortOrder" name="sortOrder" class="layui-input" value="0">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label" for="isPublished">发布</label>
+                    <div class="layui-input-block">
+                        <input type="checkbox" id="isPublished" name="isPublished" lay-skin="switch" lay-text="启用|停用" checked>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button type="submit" class="layui-btn" lay-submit>保存</button>
+                        <a href="/admin/banners" class="layui-btn layui-btn-primary" style="margin-left:10px;">返回列表</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    const token = localStorage.getItem('jwt_token');
+    if (!token) {
+        window.location.href = '/admin/login';
+    }
+    let isEditMode = false;
+    const idInput = document.getElementById('bannerId');
+    const pageTitle = document.getElementById('page-title');
+    const editorForm = document.getElementById('editForm');
+
+    // 文件上传通用方法
+    function setupFileUpload(inputId, urlFieldId, previewId) {
+        const fileInput = document.getElementById(inputId);
+        fileInput.addEventListener('change', async function() {
+            const file = this.files[0];
+            if (!file) return;
+            const fd = new FormData();
+            fd.append('file', file);
+            try {
+                const resp = await fetch('/api/v1/upload', {
+                    method:'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: fd
+                });
+                const result = await resp.json();
+                if (resp.ok) {
+                    document.getElementById(urlFieldId).value = result.url;
+                    const img = document.getElementById(previewId);
+                    img.src = result.url;
+                    img.style.display = 'block';
+                } else {
+                    alert(result.error || '上传失败');
+                }
+            } catch (err) {
+                alert('网络错误');
+            }
+        });
+    }
+    setupFileUpload('imageFile','imageUrl','imagePreview');
+
+    function detectMode() {
+        const parts = window.location.pathname.split('/');
+        if (parts.includes('edit') && parts.length > parts.indexOf('edit') + 1) {
+            const id = parts[parts.indexOf('edit') + 1];
+            if (!isNaN(id)) {
+                isEditMode = true;
+                idInput.value = id;
+                pageTitle.textContent = `编辑轮播图 (ID: ${id})`;
+                loadData(id);
+            }
+        }
+    }
+
+    async function loadData(id) {
+        try {
+            const resp = await fetch(`/api/v1/banners/${id}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const result = await resp.json();
+            if (resp.ok) {
+                const b = result.data;
+                document.getElementById('link').value = b.link || '';
+                document.getElementById('sortOrder').value = b.sortOrder;
+                document.getElementById('isPublished').checked = b.isPublished;
+                document.getElementById('imageUrl').value = b.imageUrl;
+                if (b.imageUrl) {
+                    const img = document.getElementById('imagePreview');
+                    img.src = b.imageUrl;
+                    img.style.display = 'block';
+                }
+            } else {
+                alert(result.error || '加载失败');
+            }
+        } catch (err) {
+            alert('网络错误');
+        }
+    }
+    editorForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const payload = {
+            imageUrl: document.getElementById('imageUrl').value,
+            link: document.getElementById('link').value,
+            sortOrder: parseInt(document.getElementById('sortOrder').value || '0'),
+            isPublished: document.getElementById('isPublished').checked
+        };
+        let url = '/api/v1/banners';
+        let method = 'POST';
+        if (isEditMode) {
+            url = `/api/v1/banners/${idInput.value}`;
+            method = 'PUT';
+        }
+        try {
+            const resp = await fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type':'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(payload)
+            });
+            const result = await resp.json();
+            if (resp.ok) {
+                alert('保存成功！');
+                window.location.href = '/admin/banners';
+            } else {
+                alert(result.error || '保存失败');
+            }
+        } catch (err) {
+            alert('网络错误');
+        }
+    });
+    window.addEventListener('DOMContentLoaded', () => {
+        detectMode();
+    });
+</script>
+<script src="https://cdn.staticfile.org/layui/2.8.0/layui.js"></script>
+</body>
+</html>

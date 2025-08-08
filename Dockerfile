@@ -5,7 +5,7 @@ FROM golang:1.24 AS builder
 # 安装编译依赖
 RUN apt-get update && apt-get install -y build-essential
 
-# ✅ 设置 Go 模块代理为国内源
+# 设置 Go 模块代理为国内源
 ENV GOPROXY=https://goproxy.cn,direct
 
 WORKDIR /app

@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>PanshiCMS - 站点设置</title>
+    <link rel="stylesheet" href="https://cdn.staticfile.org/layui/2.8.0/css/layui.css" />
+    <style>
+        body { font-family: sans-serif; margin: 0; background-color: #f8f9fa; }
+        .container { display: flex; min-height: 100vh; }
+        .sidebar { width: 220px; background-color: #343a40; color: white; padding-top: 20px; flex-shrink: 0; }
+        .sidebar h2 { text-align: center; margin-bottom: 30px; font-size: 20px; }
+        .sidebar ul { list-style: none; padding: 0; margin: 0; }
+        .sidebar ul li a { display: block; color: #adb5bd; padding: 15px 20px; text-decoration: none; }
+        .sidebar ul li a:hover,
+        .sidebar ul li a.active { background-color: #495057; color: white; }
+        .main-content { flex-grow: 1; }
+        .header { background-color: white; padding: 15px 30px; border-bottom: 1px solid #dee2e6; display: flex; justify-content: space-between; align-items: center; }
+        .header h1 { margin: 0; font-size: 24px; }
+        .content { padding: 30px; }
+        #privacyPolicy, #legalStatement { display: none; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="sidebar">
+        <h2>PanshiCMS</h2>
+        <ul>
+            <li><a href="/admin/dashboard">仪表盘</a></li>
+            <li><a href="/admin/news">新闻管理</a></li>
+            <li><a href="/admin/services">服务管理</a></li>
+            <li><a href="/admin/cases">案例管理</a></li>
+            <li><a href="/admin/banners">轮播图管理</a></li>
+            <li><a href="/admin/settings" class="active">站点设置</a></li>
+        </ul>
+    </div>
+    <div class="main-content">
+        <div class="header">
+            <h1>站点设置</h1>
+        </div>
+        <div class="content">
+            <form id="settingsForm" class="layui-form">
+                <div class="layui-form-item">
+                    <label class="layui-form-label" for="companyName">公司名称</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="companyName" name="companyName" class="layui-input" required lay-verify="required">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label" for="contactPhone">联系电话</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="contactPhone" name="contactPhone" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label" for="contactEmail">联系邮箱</label>
+                    <div class="layui-input-block">
+                        <input type="email" id="contactEmail" name="contactEmail" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label" for="address">公司地址</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="address" name="address" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">微信二维码</label>
+                    <div class="layui-input-block">
+                        <input type="file" id="wechatQR" accept="image/*" class="layui-input">
+                        <input type="hidden" id="wechatQRUrl" name="wechatQRUrl">
+                        <div style="margin-top:10px;">
+                            <img id="wechatPreview" src="" alt="微信二维码" style="max-width:200px; display:none;">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label" for="icpNumber">ICP备案号</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="icpNumber" name="icpNumber" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label" for="gonganBeian">公安备案号</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="gonganBeian" name="gonganBeian" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label" for="copyrightInfo">版权信息</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="copyrightInfo" name="copyrightInfo" class="layui-input">
+                    </div>
+                </div>
+                <!-- 首页服务数量 -->
+                <div class="layui-form-item">
+                    <label class="layui-form-label" for="homepageServiceCount">首页服务数量</label>
+                    <div class="layui-input-block">
+                        <input type="number" id="homepageServiceCount" name="homepageServiceCount" class="layui-input" min="1" value="6">
+                    </div>
+                </div>
+                <!-- 首页介绍富文本 -->
+                <div class="layui-form-item">
+                    <label class="layui-form-label">首页介绍</label>
+                    <div class="layui-input-block">
+                        <div id="homepageEditor" style="border:1px solid #ccc; height:200px;"></div>
+                        <textarea id="homepageIntro" name="homepageIntro"></textarea>
+                    </div>
+                </div>
+                <!-- 默认SEO设置 -->
+                <div class="layui-form-item">
+                    <label class="layui-form-label" for="defaultMetaTitle">默认SEO标题</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="defaultMetaTitle" name="defaultMetaTitle" class="layui-input">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label" for="defaultMetaDescription">默认SEO描述</label>
+                    <div class="layui-input-block">
+                        <textarea id="defaultMetaDescription" name="defaultMetaDescription" class="layui-textarea"></textarea>
+                    </div>
+                </div>
+
+                <!-- 首页轮播图设置 -->
+                <div class="layui-form-item">
+                    <label class="layui-form-label">轮播图1</label>
+                    <div class="layui-input-block">
+                        <input type="file" id="banner1File" accept="image/*" class="layui-input">
+                        <input type="hidden" id="bannerImage1Url" name="bannerImage1Url">
+                        <div style="margin-top:10px;">
+                            <img id="banner1Preview" src="" alt="轮播图1" style="max-width:200px; display:none;">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">轮播图2</label>
+                    <div class="layui-input-block">
+                        <input type="file" id="banner2File" accept="image/*" class="layui-input">
+                        <input type="hidden" id="bannerImage2Url" name="bannerImage2Url">
+                        <div style="margin-top:10px;">
+                            <img id="banner2Preview" src="" alt="轮播图2" style="max-width:200px; display:none;">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">轮播图3</label>
+                    <div class="layui-input-block">
+                        <input type="file" id="banner3File" accept="image/*" class="layui-input">
+                        <input type="hidden" id="bannerImage3Url" name="bannerImage3Url">
+                        <div style="margin-top:10px;">
+                            <img id="banner3Preview" src="" alt="轮播图3" style="max-width:200px; display:none;">
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">隐私政策</label>
+                    <div class="layui-input-block">
+                        <div id="privacyEditor" style="border:1px solid #ccc; height:200px;"></div>
+                        <textarea id="privacyPolicy" name="privacyPolicy"></textarea>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label">法律声明</label>
+                    <div class="layui-input-block">
+                        <div id="legalEditor" style="border:1px solid #ccc; height:200px;"></div>
+                        <textarea id="legalStatement" name="legalStatement"></textarea>
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <div class="layui-input-block">
+                        <button type="submit" class="layui-btn" lay-submit>保存</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    const token = localStorage.getItem('jwt_token');
+    if (!token) {
+        window.location.href = '/admin/login';
+    }
+    let privacyEditor, legalEditor;
+    let homepageEditor;
+    function initEditors() {
+        const E = window.wangEditor;
+        privacyEditor = new E('#privacyEditor');
+        privacyEditor.config.onchange = function(html) {
+            document.getElementById('privacyPolicy').value = html;
+        };
+        privacyEditor.create();
+        legalEditor = new E('#legalEditor');
+        legalEditor.config.onchange = function(html) {
+            document.getElementById('legalStatement').value = html;
+        };
+        legalEditor.create();
+
+        // 首页介绍编辑器
+        homepageEditor = new E('#homepageEditor');
+        homepageEditor.config.onchange = function(html) {
+            document.getElementById('homepageIntro').value = html;
+        };
+        homepageEditor.create();
+    }
+    async function loadSettings() {
+        try {
+            const resp = await fetch('/api/v1/site-settings', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const result = await resp.json();
+            if (resp.ok) {
+                const data = result.data;
+                document.getElementById('companyName').value = data.companyName;
+                document.getElementById('contactPhone').value = data.contactPhone;
+                document.getElementById('contactEmail').value = data.contactEmail;
+                document.getElementById('address').value = data.address;
+                document.getElementById('icpNumber').value = data.icpNumber;
+                document.getElementById('gonganBeian').value = data.gonganBeian;
+                document.getElementById('copyrightInfo').value = data.copyrightInfo;
+                document.getElementById('wechatQRUrl').value = data.wechatQrUrl;
+                if (data.wechatQrUrl) {
+                    const img = document.getElementById('wechatPreview');
+                    img.src = data.wechatQrUrl;
+                    img.style.display = 'block';
+                }
+                // 加载轮播图预览
+                document.getElementById('bannerImage1Url').value = data.bannerImage1Url || '';
+                document.getElementById('bannerImage2Url').value = data.bannerImage2Url || '';
+                document.getElementById('bannerImage3Url').value = data.bannerImage3Url || '';
+                if (data.bannerImage1Url) {
+                    const img1 = document.getElementById('banner1Preview');
+                    img1.src = data.bannerImage1Url;
+                    img1.style.display = 'block';
+                }
+                if (data.bannerImage2Url) {
+                    const img2 = document.getElementById('banner2Preview');
+                    img2.src = data.bannerImage2Url;
+                    img2.style.display = 'block';
+                }
+                if (data.bannerImage3Url) {
+                    const img3 = document.getElementById('banner3Preview');
+                    img3.src = data.bannerImage3Url;
+                    img3.style.display = 'block';
+                }
+                if (privacyEditor) privacyEditor.txt.html(data.privacyPolicy || '');
+                if (legalEditor) legalEditor.txt.html(data.legalStatement || '');
+                if (homepageEditor) homepageEditor.txt.html(data.homepageIntro || '');
+                document.getElementById('privacyPolicy').value = data.privacyPolicy || '';
+                document.getElementById('legalStatement').value = data.legalStatement || '';
+                document.getElementById('homepageServiceCount').value = data.homepageServiceCount || 6;
+                document.getElementById('homepageIntro').value = data.homepageIntro || '';
+                document.getElementById('defaultMetaTitle').value = data.defaultMetaTitle || '';
+                document.getElementById('defaultMetaDescription').value = data.defaultMetaDescription || '';
+            } else {
+                alert(result.error || '获取设置失败');
+            }
+        } catch (err) {
+            alert('网络错误');
+        }
+    }
+    // 文件上传
+    const qrInput = document.getElementById('wechatQR');
+    qrInput.addEventListener('change', async function() {
+        const file = this.files[0];
+        if (!file) return;
+        const fd = new FormData();
+        fd.append('file', file);
+        try {
+            const resp = await fetch('/api/v1/upload', {
+                method:'POST',
+                headers: { 'Authorization': `Bearer ${token}` },
+                body: fd
+            });
+            const result = await resp.json();
+            if (resp.ok) {
+                document.getElementById('wechatQRUrl').value = result.url;
+                const img = document.getElementById('wechatPreview');
+                img.src = result.url;
+                img.style.display = 'block';
+            } else {
+                alert(result.error || '上传失败');
+            }
+        } catch (err) {
+            alert('网络错误');
+        }
+    });
+
+    // 通用文件上传处理函数，用于轮播图上传
+    function setupFileUpload(inputId, urlFieldId, previewId) {
+        const fileInput = document.getElementById(inputId);
+        fileInput.addEventListener('change', async function() {
+            const file = this.files[0];
+            if (!file) return;
+            const fd = new FormData();
+            fd.append('file', file);
+            try {
+                const resp = await fetch('/api/v1/upload', {
+                    method:'POST',
+                    headers: { 'Authorization': `Bearer ${token}` },
+                    body: fd
+                });
+                const result = await resp.json();
+                if (resp.ok) {
+                    document.getElementById(urlFieldId).value = result.url;
+                    const img = document.getElementById(previewId);
+                    img.src = result.url;
+                    img.style.display = 'block';
+                } else {
+                    alert(result.error || '上传失败');
+                }
+            } catch (err) {
+                alert('网络错误');
+            }
+        });
+    }
+
+    // 初始化轮播图上传
+    setupFileUpload('banner1File', 'bannerImage1Url', 'banner1Preview');
+    setupFileUpload('banner2File', 'bannerImage2Url', 'banner2Preview');
+    setupFileUpload('banner3File', 'bannerImage3Url', 'banner3Preview');
+    document.getElementById('settingsForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        // 同步编辑器内容
+        document.getElementById('privacyPolicy').value = privacyEditor.txt.html();
+        document.getElementById('legalStatement').value = legalEditor.txt.html();
+        const payload = {
+            companyName: document.getElementById('companyName').value,
+            contactPhone: document.getElementById('contactPhone').value,
+            contactEmail: document.getElementById('contactEmail').value,
+            address: document.getElementById('address').value,
+            wechatQrUrl: document.getElementById('wechatQRUrl').value,
+            icpNumber: document.getElementById('icpNumber').value,
+            gonganBeian: document.getElementById('gonganBeian').value,
+            copyrightInfo: document.getElementById('copyrightInfo').value,
+            privacyPolicy: document.getElementById('privacyPolicy').value,
+            legalStatement: document.getElementById('legalStatement').value,
+            bannerImage1Url: document.getElementById('bannerImage1Url').value,
+            bannerImage2Url: document.getElementById('bannerImage2Url').value,
+            bannerImage3Url: document.getElementById('bannerImage3Url').value,
+            homepageServiceCount: parseInt(document.getElementById('homepageServiceCount').value || '6'),
+            homepageIntro: document.getElementById('homepageIntro').value,
+            defaultMetaTitle: document.getElementById('defaultMetaTitle').value,
+            defaultMetaDescription: document.getElementById('defaultMetaDescription').value
+        };
+        try {
+            const resp = await fetch('/api/v1/site-settings', {
+                method:'PUT',
+                headers: {
+                    'Content-Type':'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(payload)
+            });
+            const result = await resp.json();
+            if (resp.ok) {
+                alert('保存成功！');
+            } else {
+                alert(result.error || '保存失败');
+            }
+        } catch (err) {
+            alert('网络错误');
+        }
+    });
+    window.addEventListener('DOMContentLoaded', () => {
+        if (window.wangEditor) {
+            initEditors();
+        } else {
+            const script = document.createElement('script');
+            script.src = 'https://cdn.jsdelivr.net/npm/wangeditor@4.7.9/dist/wangEditor.min.js';
+            script.onload = () => {
+                initEditors();
+                loadSettings();
+            };
+            document.body.appendChild(script);
+            return;
+        }
+        loadSettings();
+    });
+</script>
+<script src="https://cdn.staticfile.org/layui/2.8.0/layui.js"></script>
+</body>
+</html>

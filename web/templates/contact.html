@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>联系我们 - {{ .settings.CompanyName }}</title>
+  <!-- 引入 Layui 样式 -->
+  <link rel="stylesheet" href="https://cdn.staticfile.org/layui/2.8.0/css/layui.css" />
+  <!-- SEO 默认设置 -->
+  {{ if .settings.DefaultMetaDescription }}<meta name="description" content="{{ .settings.DefaultMetaDescription }}">{{ end }}
+  {{ if .settings.DefaultMetaTitle }}<meta name="title" content="{{ .settings.DefaultMetaTitle }}">{{ end }}
+  <style>
+    body { margin: 0; font-family: sans-serif; background-color: #f8f9fa; }
+    :root {
+      --primary-color: #0a4b8e;
+      --accent-color: #006dba;
+      --footer-bg: #00264d;
+    }
+    header { background-color: var(--primary-color); color: #fff; padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; }
+    nav a { margin-right: 15px; color: #ffffff; text-decoration: none; }
+    nav a:last-child { margin-right: 0; }
+    nav a:hover { text-decoration: underline; }
+    .section { padding: 40px 30px; background-color: white; max-width: 800px; margin: 30px auto; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+    .section h1 { color: var(--primary-color); }
+    .footer { background-color: var(--footer-bg); color: #fff; padding: 20px 30px; text-align: center; }
+    .footer a { color: #adb5bd; margin: 0 8px; text-decoration: none; }
+    .form-group { margin-bottom: 15px; }
+    label { display: block; margin-bottom: 5px; color: #555; }
+    input[type=text], input[type=email], textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+    textarea { min-height: 120px; }
+    button { background-color: var(--accent-color); color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
+    button:disabled { background-color: #ccc; }
+    #message-box { margin-top: 10px; color: green; }
+  </style>
+</head>
+<body>
+<header>
+  <div class="logo">{{ .settings.CompanyName }}</div>
+  <nav>
+    <a href="/">首页</a>
+    <a href="/about">关于我们</a>
+    <a href="/services">产品服务</a>
+    <a href="/cases">成功案例</a>
+    <a href="/news">新闻中心</a>
+    <a href="/contact" style="font-weight:bold;">联系我们</a>
+  </nav>
+</header>
+
+<div class="section">
+  <h1>联系我们</h1>
+  <p>如果您有任何疑问或合作意向，请通过以下方式联系我们，或填写下方留言表单，我们会尽快回复您。</p>
+  <p>电话：{{ .settings.ContactPhone }}</p>
+  <p>邮箱：{{ .settings.ContactEmail }}</p>
+  <p>地址：{{ .settings.Address }}</p>
+
+  <h2>在线留言</h2>
+  <form id="contactForm">
+    <div class="form-group">
+      <label for="name">姓名 *</label>
+      <input type="text" id="name" name="name" required>
+    </div>
+    <div class="form-group">
+      <label for="email">邮箱</label>
+      <input type="email" id="email" name="email">
+    </div>
+    <div class="form-group">
+      <label for="phone">电话</label>
+      <input type="text" id="phone" name="phone">
+    </div>
+    <div class="form-group">
+      <label for="message">留言内容 *</label>
+      <textarea id="message" name="message" required></textarea>
+    </div>
+    <button type="submit">提交</button>
+    <div id="message-box"></div>
+  </form>
+</div>
+
+<footer class="footer">
+  <p>© {{ .settings.CompanyName }}</p>
+  <p>ICP备案号：{{ .settings.ICPNumber }} | 公安备案号：{{ .settings.GonganBeian }}</p>
+  <p>
+    <a href="/privacy" style="color:#adb5bd;">隐私政策</a>
+    |
+    <a href="/legal" style="color:#adb5bd;">法律声明</a>
+  </p>
+</footer>
+
+<script>
+document.getElementById('contactForm').addEventListener('submit', async function(event) {
+  event.preventDefault();
+  const form = event.target;
+  const data = {
+    name: form.name.value,
+    email: form.email.value,
+    phone: form.phone.value,
+    message: form.message.value,
+  };
+  const messageBox = document.getElementById('message-box');
+  messageBox.textContent = '';
+  try {
+    const response = await fetch('/contact', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+    });
+    const result = await response.json();
+    if (response.ok) {
+      messageBox.style.color = 'green';
+      messageBox.textContent = result.message;
+      form.reset();
+    } else {
+      messageBox.style.color = 'red';
+      messageBox.textContent = result.error || '提交失败';
+    }
+  } catch (error) {
+    messageBox.style.color = 'red';
+    messageBox.textContent = '网络错误，请稍后重试';
+  }
+});
+</script>
+</body>
+</html>

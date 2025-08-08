@@ -51,6 +51,24 @@ func InitAdminHandler(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "管理员初始化成功"})
 }
 
+// DoHandler 兼容旧版URL的初始化入口
+// 访问 /do?action=init 将调用 InitAdminHandler 来创建第一个管理员
+func DoHandler(c *gin.Context) {
+	action := c.Query("action")
+	if action != "init" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "未知的操作"})
+		return
+	}
+	// 尝试创建管理员，无论是GET还是POST请求均可
+	// 为了兼容 GET 请求，无需读取 JSON 体，直接调用初始化逻辑
+	// 如果未提供用户名和密码，则返回错误
+	if c.Request.Method == http.MethodGet {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "请使用 POST 请求并提供用户名和密码"})
+		return
+	}
+	InitAdminHandler(c)
+}
+
 // LoginHandler 处理管理员登录请求
 func LoginHandler(c *gin.Context) {
 	var req struct {

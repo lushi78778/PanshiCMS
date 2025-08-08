@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <title>PanshiCMS - 后台管理</title>
+  <!-- 引入 layui 样式 -->
+  <link rel="stylesheet" href="https://cdn.staticfile.org/layui/2.8.0/css/layui.css" />
   <style>
     body { font-family: sans-serif; margin: 0; background-color: #f8f9fa; }
     .container { display: flex; min-height: 100vh; }
@@ -15,7 +17,6 @@
     .header { background-color: white; padding: 15px 30px; border-bottom: 1px solid #dee2e6; display: flex; justify-content: space-between; align-items: center; }
     .header h1 { margin: 0; font-size: 24px; }
     .content { padding: 30px; }
-    #logoutButton { background-color: #dc3545; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; }
   </style>
 </head>
 <body>
@@ -27,12 +28,14 @@
       <li><a href="/admin/news">新闻管理</a></li>
       <li><a href="/admin/services">服务管理</a></li>
       <li><a href="/admin/cases">案例管理</a></li>
+      <li><a href="/admin/banners">轮播图管理</a></li>
+      <li><a href="/admin/settings">站点设置</a></li>
     </ul>
   </div>
   <div class="main-content">
     <div class="header">
       <h1>欢迎, Admin!</h1>
-      <button id="logoutButton">退出登录</button>
+      <button id="logoutButton" class="layui-btn layui-btn-danger">退出登录</button>
     </div>
     <div class="content">
       <h2>仪表盘</h2>
@@ -55,5 +58,7 @@
     window.location.href = '/admin/login';
   });
 </script>
+<!-- 引入 layui JS -->
+<script src="https://cdn.staticfile.org/layui/2.8.0/layui.js"></script>
 </body>
 </html>

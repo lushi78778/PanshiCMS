@@ -13,7 +13,7 @@ import (
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 
-	"PanshiCMS/internal/model" // 请将 "your-repo" 替换为您的代码仓库地址
+	"PanshiCMS/internal/model"
 )
 
 var DB *gorm.DB
@@ -61,6 +61,31 @@ func InitDB() {
 	// 自动迁移模式
 	runMigrations()
 
+	// 初始化站点设置：如果不存在记录则创建一条默认记录
+	var settingsCount int64
+	DB.Model(&model.SiteSettings{}).Count(&settingsCount)
+	if settingsCount == 0 {
+		DB.Create(&model.SiteSettings{
+			CompanyName:            "企业名称",
+			ContactPhone:           "",
+			ContactEmail:           "",
+			Address:                "",
+			WechatQRURL:            "",
+			ICPNumber:              "",
+			GonganBeian:            "",
+			CopyrightInfo:          "© 企业名称",
+			PrivacyPolicy:          "",
+			LegalStatement:         "",
+			BannerImage1URL:        "",
+			BannerImage2URL:        "",
+			BannerImage3URL:        "",
+			HomepageServiceCount:   6,
+			HomepageIntro:          "",
+			DefaultMetaTitle:       "",
+			DefaultMetaDescription: "",
+		})
+	}
+
 	// 配置连接池
 	sqlDB, err := DB.DB()
 	if err != nil {
@@ -80,7 +105,9 @@ func runMigrations() {
 		&model.Service{},
 		&model.CaseStudy{},
 		&model.AdminUser{},
-		// ... 在这里加入所有定义的模型 ...
+		&model.ContactMessage{},
+		&model.Banner{},
+		// 在此处添加所有定义的模型
 	)
 	if err != nil {
 		log.Fatalf("数据库自动迁移失败: %v", err)

@@ -4,6 +4,7 @@ package handler
 import (
 	"net/http"
 	"strconv"
+	"strings"
 
 	"PanshiCMS/internal/database"
 	"PanshiCMS/internal/model"
@@ -32,11 +33,23 @@ func GetNewsList(c *gin.Context) {
 	pageSize, _ := strconv.Atoi(c.DefaultQuery("pageSize", "10"))
 	offset := (page - 1) * pageSize
 
+	// 支持简单的标题/摘要搜索，通过查询参数 q 传入关键字
+	keyword := strings.TrimSpace(c.DefaultQuery("q", ""))
+
 	var newsList []model.NewsArticle
 	var total int64
 
-	database.DB.Model(&model.NewsArticle{}).Count(&total)
-	database.DB.Order("publish_date desc").Limit(pageSize).Offset(offset).Find(&newsList)
+	// 构建基础查询
+	db := database.DB.Model(&model.NewsArticle{})
+	if keyword != "" {
+		like := "%" + keyword + "%"
+		db = db.Where("title LIKE ? OR summary LIKE ?", like, like)
+	}
+
+	// 获取总数
+	db.Count(&total)
+	// 查询分页数据
+	db.Order("publish_date desc").Limit(pageSize).Offset(offset).Find(&newsList)
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "获取文章列表成功",

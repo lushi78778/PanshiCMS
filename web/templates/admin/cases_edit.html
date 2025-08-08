@@ -2,18 +2,16 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>PanshiCMS - 编辑文章</title>
-    <!-- 引入 layui 样式 -->
+    <title>PanshiCMS - 编辑案例</title>
     <link rel="stylesheet" href="https://cdn.staticfile.org/layui/2.8.0/css/layui.css" />
     <!-- 引入 AiEditor 样式 -->
     <link rel="stylesheet" href="/static/aieditor/style.css" />
-    <!-- 引入自定义样式用于侧边栏和总体布局 -->
     <style>
         body { font-family: sans-serif; margin: 0; background-color: #f8f9fa; }
         .container { display: flex; min-height: 100vh; }
         .sidebar { width: 220px; background-color: #343a40; color: white; padding-top: 20px; flex-shrink: 0; }
         .sidebar h2 { text-align: center; margin-bottom: 30px; font-size: 20px; }
-        .sidebar ul { list-style-type: none; padding: 0; margin: 0; }
+        .sidebar ul { list-style: none; padding: 0; margin: 0; }
         .sidebar ul li a { display: block; color: #adb5bd; padding: 15px 20px; text-decoration: none; }
         .sidebar ul li a:hover,
         .sidebar ul li a.active { background-color: #495057; color: white; }
@@ -21,12 +19,11 @@
         .header { background-color: white; padding: 15px 30px; border-bottom: 1px solid #dee2e6; display: flex; justify-content: space-between; align-items: center; }
         .header h1 { margin: 0; font-size: 24px; }
         .content { padding: 30px; }
-        /* 隐藏 textarea，用于富文本内容同步 */
+        /* 隐藏 textarea，用于同步编辑器内容 */
         #content { display: none; }
         /* AiEditor 容器样式 */
         #aiEditor {
             margin-bottom: 20px;
-            /* 调整高度以避免编辑内容被遮挡 */
             height: 550px;
             border: 1px solid #ccc;
         }
@@ -38,30 +35,39 @@
         <h2>PanshiCMS</h2>
         <ul>
             <li><a href="/admin/dashboard">仪表盘</a></li>
-            <li><a href="/admin/news" class="active">新闻管理</a></li>
+            <li><a href="/admin/news">新闻管理</a></li>
             <li><a href="/admin/services">服务管理</a></li>
-            <li><a href="/admin/cases">案例管理</a></li>
+            <li><a href="/admin/cases" class="active">案例管理</a></li>
             <li><a href="/admin/banners">轮播图管理</a></li>
             <li><a href="/admin/settings">站点设置</a></li>
         </ul>
     </div>
     <div class="main-content">
         <div class="header">
-            <h1 id="page-title">新建文章</h1>
-            <a href="/admin/news" class="btn">返回列表</a>
+            <h1 id="page-title">新建案例</h1>
+            <a href="/admin/cases" class="layui-btn layui-btn-primary">返回列表</a>
         </div>
         <div class="content">
-            <!-- 使用 layui 表单容器 -->
-            <form id="editForm" class="layui-form" lay-filter="newsForm">
-                <input type="hidden" id="newsId" name="newsId">
-
+            <form id="editForm" class="layui-form">
+                <input type="hidden" id="caseId" name="caseId">
                 <div class="layui-form-item">
                     <label class="layui-form-label" for="title">标题</label>
                     <div class="layui-input-block">
-                        <input type="text" id="title" name="title" required lay-verify="required" placeholder="请输入标题" class="layui-input">
+                        <input type="text" id="title" name="title" required lay-verify="required" placeholder="请输入案例标题" class="layui-input">
                     </div>
                 </div>
-
+                <div class="layui-form-item">
+                    <label class="layui-form-label" for="customerName">客户名称</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="customerName" name="customerName" class="layui-input" placeholder="可选">
+                    </div>
+                </div>
+                <div class="layui-form-item">
+                    <label class="layui-form-label" for="industry">行业</label>
+                    <div class="layui-input-block">
+                        <input type="text" id="industry" name="industry" class="layui-input" placeholder="可选">
+                    </div>
+                </div>
                 <div class="layui-form-item">
                     <label class="layui-form-label">封面图片</label>
                     <div class="layui-input-block">
@@ -72,49 +78,42 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="layui-form-item">
-                    <label class="layui-form-label" for="summary">摘要</label>
-                    <div class="layui-input-block">
-                        <textarea id="summary" name="summary" class="layui-textarea" placeholder="请输入摘要"></textarea>
-                    </div>
-                </div>
-
                 <div class="layui-form-item">
                     <label class="layui-form-label">正文</label>
                     <div class="layui-input-block">
                         <!-- AiEditor 容器 -->
                         <div id="aiEditor"></div>
-                        <!-- 隐藏 textarea 用于提交正文 HTML -->
+                        <!-- 隐藏 textarea 用于提交 HTML 内容 -->
                         <textarea id="content" name="content"></textarea>
                     </div>
                 </div>
-
+                <div class="layui-form-item">
+                    <label class="layui-form-label" for="isPublished">发布</label>
+                    <div class="layui-input-block" style="padding-top:9px;">
+                        <input type="checkbox" id="isPublished" name="isPublished" lay-skin="primary" title="是否发布">
+                    </div>
+                </div>
+                <!-- 原 slug 行已合并至 SEO 设置下方 -->
                 <div class="layui-form-item">
                     <label class="layui-form-label" for="slug">URL别名</label>
                     <div class="layui-input-block">
-                        <input type="text" id="slug" name="slug" required lay-verify="required" placeholder="例如 hello-world" class="layui-input">
-                    </div>
-                </div>
-                <div class="layui-form-item">
-                    <label class="layui-form-label" for="publishDate">发布日期</label>
-                    <div class="layui-input-block">
-                        <input type="datetime-local" id="publishDate" name="publishDate" required lay-verify="required" class="layui-input">
+                        <input type="text" id="slug" name="slug" required lay-verify="required" placeholder="slug，如案例别名" class="layui-input">
                     </div>
                 </div>
 
+                <!-- SEO 设置 -->
                 <hr>
                 <h3 style="margin:20px 0 10px;">SEO 设置</h3>
                 <div class="layui-form-item">
                     <label class="layui-form-label" for="metaTitle">SEO 标题</label>
                     <div class="layui-input-block">
-                        <input type="text" id="metaTitle" name="metaTitle" class="layui-input" placeholder="选填，默认为文章标题">
+                        <input type="text" id="metaTitle" name="metaTitle" class="layui-input" placeholder="选填">
                     </div>
                 </div>
                 <div class="layui-form-item">
                     <label class="layui-form-label" for="metaDescription">SEO 描述</label>
                     <div class="layui-input-block">
-                        <textarea id="metaDescription" name="metaDescription" class="layui-textarea" placeholder="选填，建议不超过150字"></textarea>
+                        <textarea id="metaDescription" name="metaDescription" class="layui-textarea" placeholder="选填"></textarea>
                     </div>
                 </div>
                 <div class="layui-form-item">
@@ -123,7 +122,6 @@
                         <input type="text" id="metaKeywords" name="metaKeywords" class="layui-input" placeholder="用逗号分隔多个关键词">
                     </div>
                 </div>
-
                 <!-- AI 生成元信息按钮 -->
                 <div class="layui-form-item">
                     <div class="layui-input-block">
@@ -134,34 +132,27 @@
                 <div class="layui-form-item">
                     <div class="layui-input-block">
                         <button type="submit" class="layui-btn" lay-submit>保存</button>
-                        <a href="/admin/news" class="layui-btn layui-btn-primary" style="margin-left:10px;">返回列表</a>
+                        <a href="/admin/cases" class="layui-btn layui-btn-primary" style="margin-left:10px;">返回</a>
                     </div>
                 </div>
             </form>
         </div>
     </div>
 </div>
-
 <script type="module">
-    // 引入 AiEditor 模块
     import { AiEditor } from '/static/aieditor/index.js';
 
-    // 登录检查，未登录则跳转登录页
+    // 登录检查
     const token = localStorage.getItem('jwt_token');
     if (!token) {
         window.location.href = '/admin/login';
     }
-
-    let editor; // AiEditor 实例
+    let editor;
     let isEditMode = false;
     const form = document.getElementById('editForm');
     const pageTitle = document.getElementById('page-title');
-    const newsIdInput = document.getElementById('newsId');
+    const caseIdInput = document.getElementById('caseId');
 
-    /**
-     * 初始化 AiEditor 编辑器
-     * @param {string} initialHtml 初始内容
-     */
     function initAiEditor(initialHtml = '') {
         editor = new AiEditor({
             element: '#aiEditor',
@@ -184,8 +175,6 @@
             },
         });
     }
-
-    // 检测新建或编辑模式并加载数据
     function detectMode() {
         const parts = window.location.pathname.split('/');
         const idx = parts.indexOf('edit');
@@ -193,67 +182,57 @@
             const id = parts[idx + 1];
             if (!isNaN(id)) {
                 isEditMode = true;
-                newsIdInput.value = id;
-                pageTitle.textContent = `编辑文章 (ID: ${id})`;
-                loadNewsData(id);
+                caseIdInput.value = id;
+                pageTitle.textContent = `编辑案例 (ID: ${id})`;
+                loadCaseData(id);
             }
         }
     }
-
-    // 根据 ID 拉取文章数据
-    async function loadNewsData(id) {
+    async function loadCaseData(id) {
         try {
-            const response = await fetch(`/api/v1/news/${id}`, {
+            const resp = await fetch(`/api/v1/cases/${id}`, {
                 headers: { 'Authorization': `Bearer ${token}` },
             });
-            if (!response.ok) throw new Error('获取文章数据失败');
-            const result = await response.json();
+            if (!resp.ok) throw new Error('获取案例数据失败');
+            const result = await resp.json();
             populateForm(result.data);
-        } catch (error) {
-            alert(error.message);
-            window.location.href = '/admin/news';
+        } catch (e) {
+            alert(e.message);
+            window.location.href = '/admin/cases';
         }
     }
-
-    // 填充表单数据
-    function populateForm(news) {
-        document.getElementById('title').value = news.title;
-        document.getElementById('summary').value = news.summary;
-        document.getElementById('slug').value = news.slug;
-        const date = new Date(news.publishDate);
-        date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
-        document.getElementById('publishDate').value = date.toISOString().slice(0, 16);
-        document.getElementById('metaTitle').value = news.metaTitle || '';
-        document.getElementById('metaDescription').value = news.metaDescription || '';
-        document.getElementById('metaKeywords').value = news.metaKeywords || '';
-        if (news.coverImageUrl) {
-            document.getElementById('coverImageUrl').value = news.coverImageUrl;
+    function populateForm(data) {
+        document.getElementById('title').value = data.title;
+        document.getElementById('customerName').value = data.customerName || '';
+        document.getElementById('industry').value = data.industry || '';
+        document.getElementById('slug').value = data.slug;
+        document.getElementById('isPublished').checked = data.isPublished;
+        document.getElementById('metaTitle').value = data.metaTitle || '';
+        document.getElementById('metaDescription').value = data.metaDescription || '';
+        document.getElementById('metaKeywords').value = data.metaKeywords || '';
+        if (data.coverImageUrl) {
+            document.getElementById('coverImageUrl').value = data.coverImageUrl;
             const preview = document.getElementById('coverPreview');
-            preview.src = news.coverImageUrl;
+            preview.src = data.coverImageUrl;
             preview.style.display = 'block';
         }
-        // 初始化编辑器并填充内容
-        initAiEditor(news.content || '');
-        document.getElementById('content').value = news.content;
+        initAiEditor(data.content || '');
+        document.getElementById('content').value = data.content;
     }
-
-    // 封面上传逻辑
     const coverInput = document.getElementById('coverImage');
     coverInput.addEventListener('change', async function () {
         const file = this.files[0];
         if (!file) return;
-        const formData = new FormData();
-        formData.append('file', file);
+        const fd = new FormData();
+        fd.append('file', file);
         try {
-            const response = await fetch('/api/v1/upload', {
+            const resp = await fetch('/api/v1/upload', {
                 method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                },
-                body: formData,
+                headers: { 'Authorization': `Bearer ${token}` },
+                body: fd,
             });
-            const result = await response.json();
-            if (response.ok) {
+            const result = await resp.json();
+            if (resp.ok) {
                 document.getElementById('coverImageUrl').value = result.url;
                 const preview = document.getElementById('coverPreview');
                 preview.src = result.url;
@@ -261,36 +240,34 @@
             } else {
                 alert(result.error || '上传失败');
             }
-        } catch (error) {
+        } catch (err) {
             alert('网络错误');
         }
     });
-
-    // 表单提交
-    form.addEventListener('submit', async function (event) {
-        event.preventDefault();
-        // 获取编辑器内容
+    form.addEventListener('submit', async function (e) {
+        e.preventDefault();
         const html = typeof editor.getHtml === 'function' ? editor.getHtml() : document.getElementById('content').value;
         document.getElementById('content').value = html;
         const payload = {
             title: document.getElementById('title').value,
-            summary: document.getElementById('summary').value,
+            customerName: document.getElementById('customerName').value,
+            industry: document.getElementById('industry').value,
             content: document.getElementById('content').value,
             slug: document.getElementById('slug').value,
-            publishDate: new Date(document.getElementById('publishDate').value).toISOString(),
+            isPublished: document.getElementById('isPublished').checked,
             metaTitle: document.getElementById('metaTitle').value,
             metaDescription: document.getElementById('metaDescription').value,
             metaKeywords: document.getElementById('metaKeywords').value,
             coverImageUrl: document.getElementById('coverImageUrl').value,
         };
-        let url = '/api/v1/news';
+        let url = '/api/v1/cases';
         let method = 'POST';
         if (isEditMode) {
-            url = `/api/v1/news/${newsIdInput.value}`;
+            url = `/api/v1/cases/${caseIdInput.value}`;
             method = 'PUT';
         }
         try {
-            const response = await fetch(url, {
+            const resp = await fetch(url, {
                 method: method,
                 headers: {
                     'Content-Type': 'application/json',
@@ -298,19 +275,18 @@
                 },
                 body: JSON.stringify(payload),
             });
-            const result = await response.json();
-            if (response.ok) {
+            const result = await resp.json();
+            if (resp.ok) {
                 alert('保存成功！');
-                window.location.href = '/admin/news';
+                window.location.href = '/admin/cases';
             } else {
                 alert(result.error || '保存失败');
             }
-        } catch (error) {
+        } catch (err) {
             alert('网络错误');
         }
     });
-
-    // AI 生成 SEO 信息
+    // AI 生成 SEO 按钮
     const generateMetaBtn = document.getElementById('generateMeta');
     generateMetaBtn.addEventListener('click', async function () {
         const titleVal = document.getElementById('title').value;
@@ -328,9 +304,8 @@
             if (response.ok) {
                 document.getElementById('metaTitle').value = result.metaTitle || '';
                 document.getElementById('metaDescription').value = result.metaDescription || '';
-                // 如果摘要为空，则将描述填充至摘要
-                if (!document.getElementById('summary').value) {
-                    document.getElementById('summary').value = result.metaDescription || '';
+                if (!document.getElementById('summary')) {
+                    // 如果案例没有摘要字段，默认不填充
                 }
                 alert('AI 生成 SEO 信息成功');
             } else {
@@ -340,16 +315,11 @@
             alert('网络错误');
         }
     });
-
-    // 页面初始化
     window.addEventListener('DOMContentLoaded', () => {
         initAiEditor('');
         detectMode();
     });
 </script>
-<!-- 引入 layui JS -->
 <script src="https://cdn.staticfile.org/layui/2.8.0/layui.js"></script>
-</body>
-</html>
 </body>
 </html>
